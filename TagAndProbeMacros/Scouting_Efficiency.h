@@ -20,6 +20,7 @@
 #include "iostream"
 #include "fstream"
 #include "cstdlib"
+#include <map>
 
 using namespace std;
 
@@ -77,6 +78,8 @@ public :
    vector<bool>    *passFilterDSTEG16EG12;
    vector<bool>    *passFilterDSTSingleEG30;
    vector<bool>    *passFilterDSTJetHT;
+   vector<bool>    *passFilterDSTSinglePhoton;
+   vector<bool>    *passFilterDSTDoubleEG;
    Int_t           nMu;
    vector<double>  *mu_pt;
    vector<double>  *mu_eta;
@@ -204,6 +207,8 @@ public :
    TBranch        *b_passFilterDSTEG16EG12;   //!
    TBranch        *b_passFilterDSTSingleEG30;   //!
    TBranch        *b_passFilterDSTJetHT;   //!
+   TBranch        *b_passFilterDSTSinglePhoton;   //!
+   TBranch        *b_passFilterDSTDoubleEG;   //!
    TBranch        *b_nMu;   //!
    TBranch        *b_mu_pt;   //!
    TBranch        *b_mu_eta;   //!
@@ -293,6 +298,7 @@ public :
    virtual void     Loop(TString output);
    virtual bool     Notify();
    virtual void     Show(Long64_t entry = -1);
+   Int_t MinPtInd(int, int);
 };
 
 #endif
@@ -387,6 +393,8 @@ void Scouting_Efficiency::Init(TTree *tree)
    passFilterDSTEG16EG12 = 0;
    passFilterDSTSingleEG30 = 0;
    passFilterDSTJetHT = 0;
+   passFilterDSTSinglePhoton = 0;
+   passFilterDSTDoubleEG = 0;
    mu_pt = 0;
    mu_eta = 0;
    mu_phi = 0;
@@ -516,6 +524,8 @@ void Scouting_Efficiency::Init(TTree *tree)
    fChain->SetBranchAddress("passFilterDSTEG16EG12", &passFilterDSTEG16EG12, &b_passFilterDSTEG16EG12);
    fChain->SetBranchAddress("passFilterDSTSingleEG30", &passFilterDSTSingleEG30, &b_passFilterDSTSingleEG30);
    fChain->SetBranchAddress("passFilterDSTJetHT", &passFilterDSTJetHT, &b_passFilterDSTJetHT);
+   fChain->SetBranchAddress("passFilterDSTSinglePhoton", &passFilterDSTSinglePhoton, &b_passFilterDSTSinglePhoton);
+   fChain->SetBranchAddress("passFilterDSTDoubleEG", &passFilterDSTDoubleEG, &b_passFilterDSTDoubleEG);
    fChain->SetBranchAddress("nMu", &nMu, &b_nMu);
    fChain->SetBranchAddress("mu_pt", &mu_pt, &b_mu_pt);
    fChain->SetBranchAddress("mu_eta", &mu_eta, &b_mu_eta);
@@ -623,4 +633,10 @@ Int_t Scouting_Efficiency::Cut(Long64_t entry)
 // returns -1 otherwise.
    return 1;
 }
+Int_t Scouting_Efficiency::MinPtInd(Int_t iele, Int_t jele)
+{
+    if (ele_pt->at(iele) > ele_pt->at(jele)) return jele;
+    else return iele;
+}
+
 #endif // #ifdef Scouting_Efficiency_cxx
